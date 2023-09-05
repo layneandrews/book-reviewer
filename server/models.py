@@ -19,3 +19,31 @@ class User(db.Model, SerializerMixin):
 
     serialize_rules = ("-_password_hash","-admin", "-created_at", "-updated_at")
 
+class Book(db.Model, SerializerMixin):
+    __tablename__ = 'books'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String)
+    author = db.Column(db.String)
+    description = db.Column(db.String)
+    image = db.Column(db.String)
+    genres = db.relationship('Genre', secondary='book_genres', back_populates='books')
+
+class Review(db.Model, SerializerMixin):
+    __tablename__ = 'reviews'
+    id = db.Column(db.Integer, primary_key=True)
+    rating = db.Column(db.Integer)
+    text = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
+
+class Genre(db.Model, SerializerMixin):
+    __tablename__ = 'genres'
+    id = db.Column(db.Integer, primary_key=True)
+    genre = db.Column(db.String)
+    books = db.relationship('Book', secondary='book_genres', back_populates='genres')
+
+class Book_genre(db.Model):
+    __tablename__ = 'book_genres'
+    db.Column('book_id', db.Integer, db.ForeignKey('books.id'), primary_key=True)
+    db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
+
